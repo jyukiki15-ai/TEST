@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Guest Registration</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;font-family:Arial, sans-serif;}
+.container{max-width:420px;margin:40px auto;padding:24px;}
+h2{text-align:center;color:#222;}
+.form-group{margin-bottom:16px;}
+label{display:block;margin-bottom:6px;font-weight:500;}
+input{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:16px;}
+button{width:100%;padding:12px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;}
+#result{display:none;text-align:center;margin-top:20px;}
+#qrcode{margin:20px auto;}
+.note{font-size:14px;color:#555;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="registerForm">
+    <h2>Guest Registration</h2>
+    <div class="form-group">
+      <label>Full Name *</label>
+      <input type="text" id="fullname" required>
+    </div>
+    <div class="form-group">
+      <label>Email Address *</label>
+      <input type="email" id="email" required>
+    </div>
+    <div class="form-group">
+      <label>Company (Optional)</label>
+      <input type="text" id="company">
+    </div>
+    <div class="form-group">
+      <label>Phone Number (Optional)</label>
+      <input type="text" id="phone">
+    </div>
+    <button onclick="handleSubmit()">Complete Registration</button>
+  </div>
+
+  <div id="result">
+    <h2>Registration Successful</h2>
+    <p>Please save or screenshot this QR code for entry check-in.</p>
+    <canvas id="qrcode"></canvas>
+    <p class="note">Present this QR code at the event entrance.</p>
+    <p class="note">Registration ID: <span id="regId"></span></p>
+  </div>
+</div>
+
+<script>
+function handleSubmit(){
+  const fullname = document.getElementById('fullname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const company = document.getElementById('company').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+
+  // Generate unique registration token
+  const timestamp = Date.now();
+  const regToken = btoa(`${fullname}|${email}|${timestamp}`);
+
+  // Render QR code (QR content = unique token link for your check-in page)
+  // Replace the domain below with your actual check-in verification URL
+  const qrContent = `https://your-event.com/checkin?token=${regToken}`;
+
+  QRCode.toCanvas(document.getElementById('qrcode'), qrContent, {width:240}, function (err) {
+    if(err) console.error(err);
+  });
+
+  document.getElementById('regId').innerText = regToken.slice(0,20)+"...";
+  document.getElementById('registerForm').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+}
+</script>
+</body>
+</html>
